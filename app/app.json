@@ -47,7 +47,10 @@
         {
           "photosPermission": "Ta aplikacja wymaga dostępu do biblioteki zdjęć, aby wybierać dokumenty do skanowania."
         }
-      ]
-    ]
+      ],
+      "expo-router",
+      "expo-secure-store"
+    ],
+    "sdkVersion": "53.0.0"
   }
-} 
+}
