@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "NotAI DOC",
+    "slug": "notai-doc",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Ta aplikacja wymaga dostępu do aparatu, aby skanować dokumenty.",
+        "NSPhotoLibraryUsageDescription": "Ta aplikacja wymaga dostępu do biblioteki zdjęć, aby wybierać dokumenty do skanowania."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Ta aplikacja wymaga dostępu do aparatu, aby skanować dokumenty notarialne."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Ta aplikacja wymaga dostępu do biblioteki zdjęć, aby wybierać dokumenty do skanowania."
+        }
+      ]
+    ]
+  }
+} 
