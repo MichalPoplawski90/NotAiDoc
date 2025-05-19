@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert } from 'react-native';
 import { TextInput, Button, Text, useTheme } from 'react-native-paper';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -25,24 +25,48 @@ const RegisterScreen = ({ navigation }) => {
       return;
     }
 
+    // Walidacja hasła - minimum 6 znaków (wymagane przez Supabase)
+    if (password.length < 6) {
+      setError('Hasło musi zawierać co najmniej 6 znaków');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
     try {
-      await register({
+      const user = await register({
         fullName,
         email,
         password,
       });
       
-      // Po pomyślnej rejestracji przechodzimy do głównego ekranu
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Main' }],
-      });
+      // Supabase domyślnie wymaga potwierdzenia email
+      Alert.alert(
+        "Rejestracja zakończona",
+        "Sprawdź swoją skrzynkę email, aby potwierdzić rejestrację.",
+        [
+          { 
+            text: "OK", 
+            onPress: () => navigation.navigate('Login')
+          }
+        ]
+      );
+      
     } catch (error) {
       console.error('Błąd rejestracji:', error);
-      setError('Błąd podczas rejestracji. Spróbuj ponownie.');
+      let errorMessage = 'Błąd podczas rejestracji. Spróbuj ponownie.';
+      
+      // Obsługa specyficznych błędów Supabase
+      if (error.message?.includes('User already registered')) {
+        errorMessage = 'Użytkownik o tym adresie email już istnieje';
+      } else if (error.message?.includes('Password')) {
+        errorMessage = 'Hasło nie spełnia wymagań bezpieczeństwa';
+      } else if (error.message?.includes('Email')) {
+        errorMessage = 'Podany adres email jest nieprawidłowy';
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

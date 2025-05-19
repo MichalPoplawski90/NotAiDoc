@@ -1,3 +1,7 @@
+// Testowanie zmiennych środowiskowych
+import envTest from './utils/envTest';
+console.log('Env test:', envTest);
+
 import { registerRootComponent } from 'expo';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';

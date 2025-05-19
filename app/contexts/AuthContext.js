@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
+import supabase from '../utils/supabase';
 
 // Tworzenie kontekstu
 const AuthContext = createContext(null);
@@ -8,65 +9,79 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState(null);
 
   // Efekt sprawdzający, czy użytkownik jest zalogowany
   useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const storedUser = await SecureStore.getItemAsync('user');
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
-        }
-      } catch (error) {
-        console.error('Błąd podczas ładowania danych użytkownika:', error);
-      } finally {
+    // Sprawdzenie istniejącej sesji
+    const session = supabase.auth.session();
+    setSession(session);
+    setUser(session?.user || null);
+    setLoading(false);
+
+    // Nasłuchiwanie zmian sesji
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+        setUser(session?.user || null);
         setLoading(false);
       }
-    };
+    );
 
-    loadUser();
+    return () => {
+      authListener?.unsubscribe();
+    };
   }, []);
 
   // Funkcja logowania
   const login = async (email, password) => {
-    // Mock implementacji logowania
-    console.log('Logowanie:', email, password);
-    
-    // W prawdziwej implementacji tutaj byłoby wywołanie API
-    const mockUser = {
-      id: '1',
-      email,
-      fullName: 'Jan Kowalski',
-    };
-
-    // Zapisanie użytkownika w Secure Store
-    await SecureStore.setItemAsync('user', JSON.stringify(mockUser));
-    setUser(mockUser);
-    return mockUser;
+    setLoading(true);
+    try {
+      const { error, user } = await supabase.auth.signIn({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+      return user;
+    } catch (error) {
+      console.error('Błąd logowania:', error.message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Funkcja rejestracji
   const register = async (userData) => {
-    // Mock implementacji rejestracji
-    console.log('Rejestracja:', userData);
-    
-    // W prawdziwej implementacji tutaj byłoby wywołanie API
-    const mockUser = {
-      id: '1',
-      email: userData.email,
-      fullName: userData.fullName,
-    };
-
-    // Zapisanie użytkownika w Secure Store
-    await SecureStore.setItemAsync('user', JSON.stringify(mockUser));
-    setUser(mockUser);
-    return mockUser;
+    setLoading(true);
+    try {
+      const { error, user } = await supabase.auth.signUp({
+        email: userData.email,
+        password: userData.password,
+        data: {
+          full_name: userData.fullName,
+        },
+      });
+      
+      if (error) throw error;
+      return user;
+    } catch (error) {
+      console.error('Błąd rejestracji:', error.message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Funkcja wylogowania
   const logout = async () => {
-    await SecureStore.deleteItemAsync('user');
-    setUser(null);
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+    } catch (error) {
+      console.error('Błąd podczas wylogowania:', error.message);
+    }
   };
 
   const authContextValue = {

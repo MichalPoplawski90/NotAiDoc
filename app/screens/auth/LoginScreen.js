@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image, Alert } from 'react-native';
 import { TextInput, Button, Text, useTheme } from 'react-native-paper';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -29,7 +29,16 @@ const LoginScreen = ({ navigation }) => {
       });
     } catch (error) {
       console.error('Błąd logowania:', error);
-      setError('Niepoprawny email lub hasło');
+      let errorMessage = 'Wystąpił błąd podczas logowania.';
+      
+      // Obsługa specyficznych błędów Supabase
+      if (error.message?.includes('Invalid login credentials')) {
+        errorMessage = 'Niepoprawny email lub hasło';
+      } else if (error.message?.includes('Email not confirmed')) {
+        errorMessage = 'Email nie został potwierdzony. Sprawdź swoją skrzynkę.';
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
