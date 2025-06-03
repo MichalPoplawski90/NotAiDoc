@@ -2,26 +2,67 @@
 
 ## Cel projektu
 
-Stworzenie aplikacji mobilnej wspomagającej pracę notariuszy poprzez automatyzację procesu dokumentowania z wykorzystaniem sztucznej inteligencji.
+**Główny cel:** Automatyczne generowanie opisów dokumentów notarialnych w indywidualnym stylu konkretnego notariusza lub w ustandaryzowanym stylu zaproponowanym przez program z wykorzystaniem sztucznej inteligencji.
+
+**Problem:** Każdy notariusz ma swój unikalny styl opisywania dokumentów w aktach notarialnych. Ręczne tworzenie opisów jest czasochłonne i monotonne.
+
+**Rozwiązanie:** AI uczy się stylu notariusza na podstawie przykładów i automatycznie generuje opisy nowych dokumentów dopasowane do indywidualnego stylu lub wedle wyboru zgodnie ze standardem zaproponowanym przez program.
 
 ## Główne funkcjonalności
 
-- Skanowanie dokumentów notarialnych za pomocą aparatu telefonu
-- Automatyczna klasyfikacja typu dokumentu
-- Ekstrakcja kluczowych danych z wykorzystaniem OCR i AI
-- Uczenie się stylu notariusza na podstawie przykładów
-- Generowanie opisów dokumentów w stylu dopasowanym do notariusza
-- Bezpieczna synchronizacja z komputerem/chmurą notariusza
+### 🎯 **CORE: Generator opisów w stylu notariusza uzytkownika lub w stylu zaproponowanym przez program**
+- **Uczenie stylu:** Analiza 2-3 przykładów opisów notariusza
+- **Standardy eksperckie:** Gotowe wzorce opisów wypracowane przez doświadczonych notariuszy
+- **Generowanie:** AI tworzy opis w wybranym stylu (własnym lub odpowiadającym standardowi eksperckiemu)
+- **Edycja i uczenie:** Notariusz poprawia opis, AI uczy się z poprawek
+- **Export:** Gotowy opis eksportowany do pliku tekstowego
+
+### 🛠️ **NARZĘDZIA WSPOMAGAJĄCE:**
+- **Skanowanie:** Pozyskanie dokumentu (aparat telefonu)
+- **OCR + AI:** Automatyczna ekstrakcja kluczowych danych z dokumentu
+- **Klasyfikacja:** Rozpoznanie typu dokumentu (odpis ksiegi wieczystej, testament, odpis stanu cywilnego etc.)
+- **Management:** Organizacja w sprawy notarialne
+- **Synchronizacja:** Bezpieczna integracja z systemami notariusza
 
 ## Przepływ pracy użytkownika
 
-1. Notariusz wybiera/tworzy sprawę
-2. Skanuje dokument
-3. Aplikacja rozpoznaje typ dokumentu i ekstrahuje dane
-4. Aplikacja proponuje metodę synchronizacji dokumentu
-5. Aplikacja generuje opis dokumentu w stylu notariusza
-6. Aplikacja umozliwia edycję opisu dokumentu
-7. Gotowy opis dokumentu jest exportowany do pliku tekstowego i synchronizowany
+### 📁 **Główny workflow:**
+
+1. **WYBÓR SPRAWY:** Notariusz wybiera sprawę (katalog dla dokumentów i opisów)
+
+2. **WYBÓR/SCAN DOKUMENTU:** 
+   - **Opcja A:** Wybiera typ dokumentu z listy → skanuje/importuje
+   - **Opcja B:** Od razu skanuje → AI auto-klasyfikuje typ dokumentu
+
+3. **STYLE CHECK & WYBÓR:** Program sprawdza opcje stylu dla tego typu dokumentu:
+   - **Standard ekspercki:** Gotowy wzorzec opisu (zawsze dostępny)
+   - **Własny styl:** Jeśli ma wystarczające przykłady ✅ lub prosi o przykłady ⚠️
+   - **Notariusz wybiera:** Standard eksperckI lub własny styl
+
+4. **PROCESSING:** OCR + AI ekstrahuje kluczowe dane z dokumentu
+
+5. **GENEROWANIE:** AI tworzy opis w wybranym stylu (standardowym lub własnym)
+
+6. **REVIEW & LEARN:** Notariusz edytuje opis → AI uczy się z poprawek
+
+7. **OUTPUT:** Gotowy opis eksportowany do pliku i zsynchronizowany w sprawie
+
+### 📊 **Style Management Tab:**
+W celu proaktywnego dostarczenia opisów dokumentów w celu nauczenia programu stylu, notariusz ma dostęp do przeglądu wszystkich typów dokumentów ze wskazaniem:
+- 🏆 **Standard ekspercki** (bazowy wzorzec wypracowany przez społeczność)
+- ✅ **Własny styl gotowy** (wystarczająco przykładów użytkownika)
+- ⚠️ **Własny styl - potrzebuje przykładów** (1-2 przykłady)  
+- ❌ **Brak własnego stylu** (0 przykładów - można użyć standardu)
+
+### 🤝 **Community Standards System:**
+- **Propozycje ulepszeń:** Użytkownicy mogą sugerować modyfikacje standardów eksperckich
+- **Głosowanie społeczności:** Notariusze głosują nad propozycjami zmian
+- **Wersjonowanie standardów:** Tracking ewolucji wzorców opisów
+- **Regionalne warianty:** Możliwość adaptacji do lokalnych praktyk
+
+**Cel:** Proaktywne przygotowanie AI + ciągłe doskonalenie standardów przez społeczność notariuszy.
+
+**Rezultat:** Zamiast 15-30 minut ręcznego pisania → 2-3 minuty review i eksport
 
 ## Technologie
 
@@ -31,6 +72,13 @@ Stworzenie aplikacji mobilnej wspomagającej pracę notariuszy poprzez automatyz
 - Expo SDK 53.0.0 (z React 19.0.0)
 - React Navigation 7.x (Navigation Container + Native Stack + Bottom Tabs)
 - React Native Paper ^5.12.3 (Material Design UI Framework)
+
+### ⚠️ **WYMAGANIA KOMPATYBILNOŚCI:**
+**KONIECZNE:** Wszystkie pakiety muszą być kompatybilne z **Expo Go SDK 53**
+- Expo Go nie obsługuje custom native modules
+- Wymagane wersje: React 19.0.0 + React Native 0.79.2
+- Sprawdzaj kompatybilność na: https://docs.expo.dev/workflow/using-libraries/
+- **Supabase:** Używaj wersji 1.x (nie 2.x) dla stabilności z React 19
 
 #### Kluczowe pakiety Expo:
 - expo-camera ~16.1.6 (nowe CameraView API do skanowania)
@@ -54,9 +102,7 @@ Stworzenie aplikacji mobilnej wspomagającej pracę notariuszy poprzez automatyz
 
 #### Eksport i synchronizacja dokumentów:
 - expo-sharing ^13.1.4 (udostępnianie dokumentów)
-- expo-document-picker ~13.1.5 (wybór miejsca zapisu)
 - expo-file-system ~18.1.9 (operacje na plikach)
-- react-native-share (natywne opcje udostępniania)
 
 ### Backend/Database
 
@@ -69,252 +115,54 @@ Stworzenie aplikacji mobilnej wspomagającej pracę notariuszy poprzez automatyz
 
 ## Struktura projektu
 
-### Aplikacja (frontend)
+**Frontend (app/):** React Native + TypeScript + Expo SDK 53
+- Components, Screens, Navigation (React Navigation)
+- Features: auth, documents, scanner, style-learning, community
+- Contexts, Hooks, Utils
 
-```
-app/
-├── assets/               # Zasoby (obrazy, fonty, itp.)
-├── components/           # Komponenty wielokrotnego użytku
-├── constants/            # Stałe i konfiguracja
-├── contexts/             # Konteksty React
-├── features/             # Funkcjonalności
-│   ├── auth/             # Autoryzacja
-│   ├── documents/        # Zarządzanie dokumentami
-│   ├── scanner/          # Skaner dokumentów
-│   └── style-learning/   # Uczenie stylu notariusza
-├── hooks/                # Hooki React
-├── navigation/           # Nawigacja
-├── screens/              # Ekrany aplikacji
-├── styles/               # Style i tematy
-└── utils/                # Narzędzia i funkcje pomocnicze
-```
-
-### Backend (FastAPI)
-
-```
-api/
-├── app/                  # Główna aplikacja FastAPI
-├── models/               # Modele danych
-├── routers/              # Endpointy API
-│   ├── auth.py           # Autoryzacja
-│   ├── cases.py          # Sprawy notarialne
-│   ├── documents.py      # Dokumenty
-│   ├── ocr.py            # OCR i ekstrakcja danych
-│   └── styles.py         # Style notariusza
-├── services/             # Usługi aplikacji
-└── tests/                # Testy jednostkowe i integracyjne
-```
+**Backend (api/):** FastAPI + Python  
+- Routers: auth, cases, documents, ocr, styles, standards
+- Models, Services, Tests
 
 ## Baza danych
 
-### Schema
+**Supabase PostgreSQL** z głównymi tabelami:
+- **users** - notariusze (rozszerza auth.users)
+- **cases** - sprawy notarialne  
+- **documents** - zeskanowane dokumenty
+- **document_types** - typy dokumentów (testament, umowa, etc.)
+- **user_styles** + **style_examples** - własne style notariuszy
+- **expert_standards** - standardy społeczności
+- **standard_proposals** + **proposal_votes** - system głosowania
 
-```sql
--- Users table (extends Supabase auth.users)
-CREATE TABLE IF NOT EXISTS users (
-  id UUID PRIMARY KEY REFERENCES auth.users ON DELETE CASCADE,
-  email TEXT UNIQUE,
-  full_name TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
-);
-
--- Cases table
-CREATE TABLE IF NOT EXISTS cases (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  title TEXT NOT NULL,
-  description TEXT,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-  status TEXT DEFAULT 'active'
-);
-
--- Document types table
-CREATE TABLE IF NOT EXISTS document_types (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name TEXT NOT NULL,
-  description TEXT
-);
-
--- Documents table
-CREATE TABLE IF NOT EXISTS documents (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  case_id UUID NOT NULL REFERENCES cases(id) ON DELETE CASCADE,
-  document_type_id UUID REFERENCES document_types(id),
-  original_filename TEXT,
-  scan_file_path TEXT,
-  scan_date TIMESTAMP WITH TIME ZONE DEFAULT now(),
-  processed BOOLEAN DEFAULT false,
-  user_id UUID NOT NULL REFERENCES users(id),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
-);
-
--- Extracted data table
-CREATE TABLE IF NOT EXISTS extracted_data (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  document_id UUID NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
-  data JSONB NOT NULL,
-  confidence FLOAT
-);
-
--- Document descriptions table
-CREATE TABLE IF NOT EXISTS document_descriptions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  document_id UUID NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
-  ai_generated_text TEXT,
-  user_edited_text TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
-);
-
--- User styles table
-CREATE TABLE IF NOT EXISTS user_styles (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  document_type_id UUID REFERENCES document_types(id),
-  style_data JSONB,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
-);
-
--- Style examples table
-CREATE TABLE IF NOT EXISTS style_examples (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_style_id UUID NOT NULL REFERENCES user_styles(id) ON DELETE CASCADE,
-  example_text TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
-);
-```
+*Pełny schemat SQL dostępny w pliku database/schema.sql*
 
 ## Dokumentacja funkcjonalności
 
-### Uczenie się stylu notariusza
+### Style Learning System
+- **NLP Analysis:** Tokenizacja, wzorce strukturalne, formatowanie
+- **Profil stylistyczny:** Uczenie na 2-3 przykładach + feedback loop
+- **Aktywne uczenie:** AI poprawia się na podstawie edycji notariusza
 
-#### Opis funkcjonalności
+### API Endpoints  
+- `/api/auth/` - autoryzacja użytkowników
+- `/api/cases/` - sprawy notarialne
+- `/api/documents/` - zarządzanie dokumentami  
+- `/api/ocr/` - ekstrakcja tekstu i klasyfikacja
+- `/api/styles/` - style notariuszy
+- `/api/standards/` - community standards
 
-System analizy stylu notariusza pozwala na automatyczne dostosowanie generowanych opisów dokumentów do indywidualnego stylu danego notariusza.
-
-#### Mechanizm działania
-
-1. Notariusz wprowadza 2-3 przykłady opisów tego samego typu dokumentu ze swoich aktów notarialnych
-2. System analizuje przykłady za pomocą technik NLP:
-   - Identyfikacja schematów i struktury opisu
-   - Rozpoznawanie typowych zwrotów i fraz
-   - Analiza formatowania danych (np. liczby słownie vs. cyfrowo)
-   - Identyfikacja kolejności prezentacji danych
-3. Tworzony jest profil stylistyczny notariusza
-4. Przy generowaniu nowych opisów system wykorzystuje profil stylistyczny
-5. Wygenerowany opis jest mozliwy do edycji w aplikacji, po zatwierdzeniu program uczy się zmian
-6. Gotowy opis jest exportowany do pliku tekstowego (do wyboru txt, doc, etc.) i synchronizowany do folderu projektu
-
-#### Kluczowe aspekty techniczne
-
-- Tokenizacja i analiza lingwistyczna tekstu
-- Wykrywanie wzorców strukturalnych w opisach
-- Ekstrakcja specyficznych cech stylu (format liczb, dat, etc.)
-- Mechanizm aktywnego uczenia na podstawie poprawek
-
-### API BackEnd
-
-#### Główne endpointy
-
-1. Autoryzacja (`/api/auth/`)
-   - Rejestracja użytkownika
-   - Logowanie
-   - Pobieranie danych użytkownika
-
-2. Sprawy (`/api/cases/`)
-   - Tworzenie sprawy notarialnej
-   - Pobieranie spraw
-   - Zarządzanie sprawami
-
-3. Dokumenty (`/api/documents/`)
-   - Dodawanie dokumentów
-   - Pobieranie dokumentów
-   - Zarządzanie dokumentami
-
-4. OCR i ekstrakcja danych (`/api/ocr/`)
-   - Ekstrakcja tekstu z dokumentu
-   - Klasyfikacja typu dokumentu
-   - Ekstrakcja strukturalnych danych
-
-5. Style notariusza (`/api/styles/`)
-   - Tworzenie stylu
-   - Dodawanie przykładów stylu
-   - Generowanie tekstu w stylu notariusza
-
-### Docker i uruchomienie
-
-Projekt jest skonfigurowany za pomocą Docker Compose z następującymi serwisami:
-- API (FastAPI backend)
-- Baza danych PostgreSQL
-- PgAdmin (UI dla bazy danych)
-
-Uruchomienie projektu:
+### Deployment
+**Docker Compose:** FastAPI + PostgreSQL + PgAdmin
 ```bash
 docker-compose up -d
 ```
 
-## Aktualizacje i naprawy
+## Status projektu
 
-### Naprawa Camera Component (Expo SDK 53)
+**⚠️ UWAGA:** Projekt WYMAGA kompatybilności z **Expo Go SDK 53**
 
-**Problem:** 
-- Stary `Camera` component z expo-camera nie działał w SDK 53
-- React 19 powodował konflikty z niektórymi bibliotekami
-- Metro bundler wymagał aktualizacji konfiguracji
-
-**Rozwiązanie:**
-1. **Aktualizacja do nowego CameraView API:**
-   ```javascript
-   // Stare API (przestarzałe w SDK 53)
-   import { Camera } from 'expo-camera';
-   
-   // Nowe API (SDK 53+) - ten sam pakiet!
-   import { CameraView, useCameraPermissions } from 'expo-camera';
-   ```
-
-2. **Aktualizacja package.json:**
-   - React 19.0.0 (wymagane przez SDK 53)
-   - React Native 0.79.2
-   - expo-camera ~16.1.6
-   - Usunięcie przestarzałych pakietów (expo-permissions)
-
-3. **Konfiguracja Metro:**
-   ```javascript
-   // metro.config.js
-   const { getDefaultConfig } = require('expo/metro-config');
-   const config = getDefaultConfig(__dirname);
-   module.exports = config;
-   ```
-
-4. **Główne zmiany w DocumentScanner.js:**
-   - Zastąpienie `Camera` przez `CameraView` (nowe API w expo-camera)
-   - Użycie `useCameraPermissions()` hook (zamiast przestarzałego Permissions)
-   - Aktualizacja props: `facing`, `mode` (nowa składnia)
-   - Nowa metoda `takePictureAsync()` (zmienione parametry)
-
-**Status:** ✅ Nowe CameraView API działa poprawnie w SDK 53
-
-## Kompatybilność wersji (Expo SDK 53)
-
-### ✅ Potwierdzone wersje kompatybilne:
-- **React Native:** 0.79.2 (wymagane dla SDK 53)
-- **React:** 19.0.0 (wymagane dla SDK 53) 
-- **TypeScript:** ~5.8.3
-- **Supabase JS:** ^1.35.7 (wersja 1.x stabilna z React 19)
-- **React Navigation:** 7.x (aktualny stack nawigacji)
-- **React Native Paper:** ^5.12.3 (Material Design 3)
-
-### ⚠️ Wersje wymagające uwagi:
-- **Supabase v2.x:** Nie jest jeszcze w pełni kompatybilna z React 19
-- **Expo Router:** Został zastąpiony przez React Navigation 7.x
-- **Camera API:** Wymagana aktualizacja ze starszych wersji SDK
-
-### 🎯 Zalecenia techniczne:
-1. **Stabilność:** Aktualna konfiguracja SDK 53 + React 19 zapewnia dobrą stabilność
-2. **Wydajność:** CameraView API oferuje lepszą wydajność niż starsze Camera
-3. **Kompatybilność:** Wszystkie kluczowe pakiety są kompatybilne z Expo Go
-4. **Przyszłość:** Stack przygotowany na przyszłe aktualizacje Expo SDK
+**✅ Expo SDK 53 + React 19:** Kompatybilność potwierdzona
+**✅ CameraView API:** Zaktualizowano z Camera component  
+**✅ Supabase 1.35.7:** Stabilna integracja
+**✅ React Navigation 7.x:** Główny routing stack
