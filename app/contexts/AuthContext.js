@@ -1,6 +1,4 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import * as SecureStore from 'expo-secure-store';
-import supabase from '../utils/supabase';
 
 // Tworzenie kontekstu
 const AuthContext = createContext(null);
@@ -8,42 +6,26 @@ const AuthContext = createContext(null);
 // Provider kontekstu autoryzacji
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [session, setSession] = useState(null);
 
-  // Efekt sprawdzający, czy użytkownik jest zalogowany
-  useEffect(() => {
-    // Sprawdzenie istniejącej sesji
-    const session = supabase.auth.session();
-    setSession(session);
-    setUser(session?.user || null);
-    setLoading(false);
-
-    // Nasłuchiwanie zmian sesji
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setUser(session?.user || null);
-        setLoading(false);
-      }
-    );
-
-    return () => {
-      authListener?.unsubscribe();
-    };
-  }, []);
-
-  // Funkcja logowania
+  // Mock funkcja logowania
   const login = async (email, password) => {
     setLoading(true);
     try {
-      const { error, user } = await supabase.auth.signIn({
-        email,
-        password,
-      });
+      // Mock delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (error) throw error;
-      return user;
+      // Mock user
+      const mockUser = {
+        id: '1',
+        email: email,
+        full_name: 'Test User'
+      };
+      
+      setUser(mockUser);
+      setSession({ user: mockUser });
+      return mockUser;
     } catch (error) {
       console.error('Błąd logowania:', error.message);
       throw error;
@@ -52,20 +34,23 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Funkcja rejestracji
+  // Mock funkcja rejestracji
   const register = async (userData) => {
     setLoading(true);
     try {
-      const { error, user } = await supabase.auth.signUp({
-        email: userData.email,
-        password: userData.password,
-        data: {
-          full_name: userData.fullName,
-        },
-      });
+      // Mock delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (error) throw error;
-      return user;
+      // Mock user
+      const mockUser = {
+        id: '2',
+        email: userData.email,
+        full_name: userData.fullName
+      };
+      
+      setUser(mockUser);
+      setSession({ user: mockUser });
+      return mockUser;
     } catch (error) {
       console.error('Błąd rejestracji:', error.message);
       throw error;
@@ -74,11 +59,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Funkcja wylogowania
+  // Mock funkcja wylogowania
   const logout = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      setUser(null);
+      setSession(null);
     } catch (error) {
       console.error('Błąd podczas wylogowania:', error.message);
     }

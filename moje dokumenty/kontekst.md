@@ -27,18 +27,45 @@ Stworzenie aplikacji mobilnej wspomagającej pracę notariuszy poprzez automatyz
 
 ### Frontend
 
-- React Native with TypeScript
-- Expo
-- Expo Router
-- React Native Paper (UI Framework)
+- React Native 0.79.2 with TypeScript ~5.8.3
+- Expo SDK 53.0.0 (z React 19.0.0)
+- React Navigation 7.x (Navigation Container + Native Stack + Bottom Tabs)
+- React Native Paper ^5.12.3 (Material Design UI Framework)
+
+#### Kluczowe pakiety Expo:
+- expo-camera ~16.1.6 (nowe CameraView API do skanowania)
+- expo-image-manipulator ~13.1.1 (przetwarzanie zdjęć dokumentów)
+- expo-file-system ~18.1.9 (zarządzanie plikami dokumentów)
+- expo-secure-store ~14.2.3 (bezpieczne przechowywanie kluczy)
+- expo-document-picker ~13.1.5 (wybór dokumentów z urządzenia)
+- expo-image-picker ~16.1.4 (wybór zdjęć z galerii)
+
+#### Animacje i gestures:
+- react-native-reanimated ~3.17.4 (płynne animacje)
+- react-native-gesture-handler ~2.24.0 (obsługa gestów)
+
+#### Storage i state management:
+- @react-native-async-storage/async-storage ^2.1.2 (lokalne przechowywanie)
+- React Context API (zarządzanie stanem aplikacji)
+
+#### Networking:
+- axios ^1.5.0 (HTTP requests)
+- react-native-dotenv ^3.4.11 (zmienne środowiskowe)
+
+#### Eksport i synchronizacja dokumentów:
+- expo-sharing ^13.1.4 (udostępnianie dokumentów)
+- expo-document-picker ~13.1.5 (wybór miejsca zapisu)
+- expo-file-system ~18.1.9 (operacje na plikach)
+- react-native-share (natywne opcje udostępniania)
 
 ### Backend/Database
 
-- Supabase
-- FastAPI (Python) dla backendu AI
-- OCR (Tesseract/Google Vision)
+- Supabase (PostgreSQL + Auth + Storage + Edge Functions)
+  - @supabase/supabase-js ^1.35.7 (klient JS - wersja 1.x kompatybilna z React 19)
+- FastAPI (Python) dla backendu AI/OCR
+- OCR (Tesseract/Google Vision API)
 - NLP dla analizy stylu i generowania tekstu
-- Docker i Docker Compose
+- Docker i Docker Compose (konteneryzacja)
 
 ## Struktura projektu
 
@@ -229,3 +256,65 @@ Uruchomienie projektu:
 ```bash
 docker-compose up -d
 ```
+
+## Aktualizacje i naprawy
+
+### Naprawa Camera Component (Expo SDK 53)
+
+**Problem:** 
+- Stary `Camera` component z expo-camera nie działał w SDK 53
+- React 19 powodował konflikty z niektórymi bibliotekami
+- Metro bundler wymagał aktualizacji konfiguracji
+
+**Rozwiązanie:**
+1. **Aktualizacja do nowego CameraView API:**
+   ```javascript
+   // Stare API (przestarzałe w SDK 53)
+   import { Camera } from 'expo-camera';
+   
+   // Nowe API (SDK 53+) - ten sam pakiet!
+   import { CameraView, useCameraPermissions } from 'expo-camera';
+   ```
+
+2. **Aktualizacja package.json:**
+   - React 19.0.0 (wymagane przez SDK 53)
+   - React Native 0.79.2
+   - expo-camera ~16.1.6
+   - Usunięcie przestarzałych pakietów (expo-permissions)
+
+3. **Konfiguracja Metro:**
+   ```javascript
+   // metro.config.js
+   const { getDefaultConfig } = require('expo/metro-config');
+   const config = getDefaultConfig(__dirname);
+   module.exports = config;
+   ```
+
+4. **Główne zmiany w DocumentScanner.js:**
+   - Zastąpienie `Camera` przez `CameraView` (nowe API w expo-camera)
+   - Użycie `useCameraPermissions()` hook (zamiast przestarzałego Permissions)
+   - Aktualizacja props: `facing`, `mode` (nowa składnia)
+   - Nowa metoda `takePictureAsync()` (zmienione parametry)
+
+**Status:** ✅ Nowe CameraView API działa poprawnie w SDK 53
+
+## Kompatybilność wersji (Expo SDK 53)
+
+### ✅ Potwierdzone wersje kompatybilne:
+- **React Native:** 0.79.2 (wymagane dla SDK 53)
+- **React:** 19.0.0 (wymagane dla SDK 53) 
+- **TypeScript:** ~5.8.3
+- **Supabase JS:** ^1.35.7 (wersja 1.x stabilna z React 19)
+- **React Navigation:** 7.x (aktualny stack nawigacji)
+- **React Native Paper:** ^5.12.3 (Material Design 3)
+
+### ⚠️ Wersje wymagające uwagi:
+- **Supabase v2.x:** Nie jest jeszcze w pełni kompatybilna z React 19
+- **Expo Router:** Został zastąpiony przez React Navigation 7.x
+- **Camera API:** Wymagana aktualizacja ze starszych wersji SDK
+
+### 🎯 Zalecenia techniczne:
+1. **Stabilność:** Aktualna konfiguracja SDK 53 + React 19 zapewnia dobrą stabilność
+2. **Wydajność:** CameraView API oferuje lepszą wydajność niż starsze Camera
+3. **Kompatybilność:** Wszystkie kluczowe pakiety są kompatybilne z Expo Go
+4. **Przyszłość:** Stack przygotowany na przyszłe aktualizacje Expo SDK
