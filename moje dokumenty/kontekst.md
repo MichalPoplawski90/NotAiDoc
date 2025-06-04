@@ -31,8 +31,8 @@
 1. **WYBÓR SPRAWY:** Notariusz wybiera sprawę (katalog dla dokumentów i opisów)
 
 2. **WYBÓR/SCAN DOKUMENTU:** 
-   - **Opcja A:** Wybiera typ dokumentu z listy → skanuje/importuje
-   - **Opcja B:** Od razu skanuje → AI auto-klasyfikuje typ dokumentu
+   - **Opcja A:** Od razu skanuje/importuje dokument → AI auto-klasyfikuje typ dokumentu
+   - **Opcja B:** Zatwierdza rodzaj dokumentu zklasyfikowanego przez AI lub ma moliwość wyboru typu dokumentu z listy (na wypadek gdyby AI źle sklasyfikował typ dokumentu)
 
 3. **STYLE CHECK & WYBÓR:** Program sprawdza opcje stylu dla tego typu dokumentu:
    - **Standard ekspercki:** Gotowy wzorzec opisu (zawsze dostępny)

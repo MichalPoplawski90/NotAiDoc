@@ -3,11 +3,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from 'react-native-paper';
 
-// Ekrany
-import CasesScreen from '../screens/cases/CasesScreen';
-import DocumentsScreen from '../screens/documents/DocumentsScreen';
-import StylesScreen from '../screens/styles/StylesScreen';
-import ProfileScreen from '../screens/profile/ProfileScreen';
+// Stack navigators
+import CasesStack from './CasesStack';
+import DocumentsStack from './DocumentsStack';
+import StylesStack from './StylesStack';
+import ProfileStack from './ProfileStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -32,9 +32,10 @@ const MainTabs = () => {
     >
       <Tab.Screen
         name="Cases"
-        component={CasesScreen}
+        component={CasesStack}
         options={{
           title: 'Sprawy',
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="folder" color={color} size={size} />
           ),
@@ -42,9 +43,10 @@ const MainTabs = () => {
       />
       <Tab.Screen
         name="Documents"
-        component={DocumentsScreen}
+        component={DocumentsStack}
         options={{
           title: 'Dokumenty',
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="description" color={color} size={size} />
           ),
@@ -52,9 +54,10 @@ const MainTabs = () => {
       />
       <Tab.Screen
         name="Styles"
-        component={StylesScreen}
+        component={StylesStack}
         options={{
           title: 'Style',
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="style" color={color} size={size} />
           ),
@@ -62,9 +65,10 @@ const MainTabs = () => {
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={ProfileStack}
         options={{
           title: 'Profil',
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="person" color={color} size={size} />
           ),

@@ -1,75 +1,144 @@
-import React from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
-import { Text, Card, Button, FAB, useTheme } from 'react-native-paper';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import { Text, Card, Button, FAB, useTheme, ActivityIndicator } from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
 
-const mockCases = [
-  {
-    id: '1',
-    title: 'Akt notarialny - sprzedaż nieruchomości',
-    description: 'Sprawa dotyczy sprzedaży nieruchomości przy ul. Kwiatowej 5',
-    status: 'active',
-    createdAt: '2023-10-05T14:30:00Z',
-  },
-  {
-    id: '2',
-    title: 'Testament',
-    description: 'Przygotowanie testamentu dla Jana Kowalskiego',
-    status: 'completed',
-    createdAt: '2023-10-01T09:15:00Z',
-  },
-  {
-    id: '3',
-    title: 'Pełnomocnictwo',
-    description: 'Pełnomocnictwo do reprezentowania przed urzędami',
-    status: 'active',
-    createdAt: '2023-09-28T11:00:00Z',
-  },
-];
+// Import API
+import { getCases } from '../../api/cases';
 
-const CasesScreen = ({ navigation }) => {
+const CasesScreen = ({ navigation, route }) => {
   const theme = useTheme();
+  const [cases, setCases] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleCreateCase = () => {
+    navigation.navigate('CreateCase');
+  };
+
+  const loadCases = async (showLoader = true) => {
+    if (showLoader) setIsLoading(true);
+    setError(null);
+    
+    try {
+      const data = await getCases();
+      setCases(data);
+      console.log('✅ Załadowano sprawy:', data.length);
+    } catch (error) {
+      console.error('Błąd ładowania spraw:', error);
+      setError(error.message);
+      
+      // Jeśli błąd dotyczy braku tabel, pokaż pomocne info
+      if (error.message.includes('relation "cases" does not exist')) {
+        setError('Baza danych nie jest skonfigurowana. Uruchom schemat bazy danych.');
+      }
+    } finally {
+      if (showLoader) setIsLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await loadCases(false);
+    setIsRefreshing(false);
+  };
+
+  // Załaduj sprawy przy pierwszym renderze
+  useEffect(() => {
+    loadCases();
+  }, []);
+
+  // Sprawdź czy wróciliśmy z formularza z nową sprawą
+  useFocusEffect(
+    useCallback(() => {
+      if (route.params?.refresh) {
+        console.log('🔄 Odświeżanie listy spraw...');
+        loadCases(false);
+        
+        // Wyczyść parametr, żeby nie odświeżać za każdym razem
+        navigation.setParams({ refresh: undefined, newCase: undefined });
+      }
+    }, [route.params])
+  );
 
   const renderCaseItem = ({ item }) => (
     <Card
       style={styles.caseCard}
       onPress={() => {
-        // Tutaj będzie nawigacja do szczegółów sprawy
         console.log('Wybrano sprawę:', item.id);
+        navigation.navigate('CaseDetail', { caseData: item });
       }}
     >
       <Card.Content>
         <Text style={styles.caseTitle}>{item.title}</Text>
-        <Text style={styles.caseDescription}>{item.description}</Text>
+        {item.description && (
+          <Text style={styles.caseDescription}>{item.description}</Text>
+        )}
         <View style={styles.caseFooter}>
           <Text style={[styles.caseStatus, { color: item.status === 'active' ? theme.colors.primary : theme.colors.success }]}>
             {item.status === 'active' ? 'Aktywna' : 'Zakończona'}
           </Text>
           <Text style={styles.caseDate}>
-            {new Date(item.createdAt).toLocaleDateString('pl-PL')}
+            {new Date(item.created_at).toLocaleDateString('pl-PL')}
           </Text>
         </View>
       </Card.Content>
     </Card>
   );
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+        <Text style={styles.loadingText}>Ładowanie spraw...</Text>
+      </View>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text style={styles.errorText}>Błąd: {error}</Text>
+        <Button
+          mode="contained"
+          onPress={() => loadCases()}
+          style={styles.retryButton}
+        >
+          Spróbuj ponownie
+        </Button>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      {mockCases.length > 0 ? (
+      {cases.length > 0 ? (
         <FlatList
-          data={mockCases}
+          data={cases}
           renderItem={renderCaseItem}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              colors={[theme.colors.primary]}
+            />
+          }
         />
       ) : (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>Brak spraw</Text>
+          <Text style={styles.emptySubtext}>
+            Utwórz pierwszą sprawę, aby rozpocząć pracę
+          </Text>
           <Button
             mode="contained"
-            onPress={() => {
-              // Tutaj będzie tworzenie nowej sprawy
-              console.log('Tworzenie nowej sprawy');
-            }}
+            onPress={handleCreateCase}
+            style={styles.emptyButton}
           >
             Utwórz pierwszą sprawę
           </Button>
@@ -79,10 +148,7 @@ const CasesScreen = ({ navigation }) => {
       <FAB
         style={[styles.fab, { backgroundColor: theme.colors.primary }]}
         icon="plus"
-        onPress={() => {
-          // Tutaj będzie tworzenie nowej sprawy
-          console.log('Dodaj nową sprawę');
-        }}
+        onPress={handleCreateCase}
       />
     </View>
   );
@@ -92,6 +158,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f7fa',
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   listContent: {
     padding: 16,
@@ -129,9 +199,34 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   emptyText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#666',
+    marginBottom: 8,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: '#999',
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  emptyButton: {
+    // style dla przycisku w pustym stanie
+  },
+  loadingText: {
+    marginTop: 16,
     fontSize: 16,
     color: '#666',
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#e74c3c',
+    textAlign: 'center',
     marginBottom: 20,
+    paddingHorizontal: 20,
+  },
+  retryButton: {
+    // style dla przycisku retry
   },
   fab: {
     position: 'absolute',
