@@ -6,6 +6,8 @@ import { useTheme } from 'react-native-paper';
 import CasesScreen from '../screens/cases/CasesScreen';
 import CreateCaseScreen from '../screens/cases/CreateCaseScreen';
 import CaseDetailScreen from '../screens/cases/CaseDetailScreen';
+import DocumentScannerScreen from '../screens/documents/DocumentScannerScreen';
+import DocumentPreviewScreen from '../screens/documents/DocumentPreviewScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -45,6 +47,21 @@ const CasesStack = () => {
         options={({ route }) => ({
           title: route.params?.caseData?.title || 'Szczegóły sprawy',
         })}
+      />
+      <Stack.Screen
+        name="DocumentScanner"
+        component={DocumentScannerScreen}
+        options={{
+          title: 'Skanuj dokument',
+          headerShown: false, // Full screen camera
+        }}
+      />
+      <Stack.Screen
+        name="DocumentPreview"
+        component={DocumentPreviewScreen}
+        options={{
+          headerShown: false, // Custom header w komponencie
+        }}
       />
     </Stack.Navigator>
   );

@@ -73,7 +73,7 @@ const CasesScreen = ({ navigation, route }) => {
       <Card.Content>
         <Text style={styles.caseTitle}>{item.title}</Text>
         {item.description && (
-          <Text style={styles.caseDescription}>{item.description}</Text>
+        <Text style={styles.caseDescription}>{item.description}</Text>
         )}
         <View style={styles.caseFooter}>
           <Text style={[styles.caseStatus, { color: item.status === 'active' ? theme.colors.primary : theme.colors.success }]}>

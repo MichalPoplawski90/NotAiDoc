@@ -40,6 +40,8 @@ CREATE TABLE IF NOT EXISTS documents (
   scan_file_path TEXT,
   scan_date TIMESTAMP WITH TIME ZONE DEFAULT now(),
   processed BOOLEAN DEFAULT false,
+  auto_recognized BOOLEAN DEFAULT false,
+  recognition_confidence FLOAT,
   user_id UUID NOT NULL REFERENCES users(id),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
@@ -92,6 +94,7 @@ ALTER TABLE style_examples ENABLE ROW LEVEL SECURITY;
 
 -- User table policies
 CREATE POLICY user_select ON users FOR SELECT USING (auth.uid() = id);
+CREATE POLICY user_insert ON users FOR INSERT WITH CHECK (auth.uid() = id);
 CREATE POLICY user_update ON users FOR UPDATE USING (auth.uid() = id);
 
 -- Case table policies
