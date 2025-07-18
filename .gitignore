@@ -48,3 +48,19 @@ web-build/
 
 # Build files
 *.tsbuildinfo
+
+# Google Cloud credentials - NEVER COMMIT!
+credentials/
+*.json
+*service-account*.json
+google-*.json
+
+# Test files
+test_*.js
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
